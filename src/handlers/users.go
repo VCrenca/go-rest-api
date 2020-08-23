@@ -34,6 +34,7 @@ func (h UserHandler) GetUserByID(w http.ResponseWriter, req *http.Request) {
 
 	email, err := h.svc.FindByID(vars["id"])
 	if err != nil {
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusInternalServerError)
 		json.NewEncoder(w).Encode(dto.ErrorResponse{Message: "An error occured"})
 		return
@@ -57,6 +58,7 @@ func (h UserHandler) PostUser(w http.ResponseWriter, req *http.Request) {
 	}
 
 	if userRequest.Email == "" || userRequest.Password == "" {
+		w.Header().Add("Content-Type", "application/json")
 		w.WriteHeader(http.StatusBadRequest)
 		json.NewEncoder(w).Encode(dto.ErrorResponse{Message: "You need to provide an email and a password !"})
 		return
