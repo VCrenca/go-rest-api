@@ -1,13 +1,14 @@
 package handlers
 
 import (
-	"encoding/json"
+	"database/sql"
 	"log"
 	"net/http"
+	"vcrenca/go-rest-api/src/dal"
 	"vcrenca/go-rest-api/src/model/dto"
 	"vcrenca/go-rest-api/src/services"
 
-	"github.com/gorilla/mux"
+	"github.com/gin-gonic/gin"
 )
 
 // UserHandler -
@@ -16,62 +17,67 @@ type UserHandler struct {
 }
 
 // ConfigureUserHandler -
-func ConfigureUserHandler(r *mux.Router, svc services.IUserService) {
+func ConfigureUserHandler(r *gin.Engine, db *sql.DB) {
+
+	userRepository := dal.NewUserAccessObject(db)
+	userService := services.NewUserService(userRepository)
+
 	handler := UserHandler{
-		svc: svc,
+		svc: userService,
 	}
-	r.Methods("GET").Path("/users/{id}").HandlerFunc(handler.GetUserByID)
-	r.Methods("POST").Path("/users").HandlerFunc(handler.PostUser)
+
+	r.GET("/users", handler.GetAllUsers)
+	r.GET("/users/:id", handler.GetUserByID)
+	r.POST("/users", handler.PostUser)
 }
 
 // GetUserByID -
-func (h UserHandler) GetUserByID(w http.ResponseWriter, req *http.Request) {
-	vars := mux.Vars(req)
-	if vars["id"] == "" {
-		w.WriteHeader(http.StatusBadRequest)
-		return
-	}
+func (h UserHandler) GetUserByID(c *gin.Context) {
+	id := c.Param("id")
 
-	email, err := h.svc.FindByID(vars["id"])
+	email, err := h.svc.FindByID(id)
 	if err != nil {
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusInternalServerError)
-		json.NewEncoder(w).Encode(dto.ErrorResponse{Message: "An error occured"})
-		return
+		panic(err.Error())
 	}
 
-	log.Println("Retrieving from database :", email)
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dto.GetUserByIDResponse{Email: email})
+	c.JSON(http.StatusOK, dto.GetUserByIDResponse{Email: email})
 }
 
 // PostUser -
-func (h UserHandler) PostUser(w http.ResponseWriter, req *http.Request) {
-
+func (h UserHandler) PostUser(c *gin.Context) {
 	var userRequest dto.CreateUserRequest
-	err := json.NewDecoder(req.Body).Decode(&userRequest)
+
+	err := c.BindJSON(&userRequest)
 	if err != nil {
-		log.Println("Error while decoding request body", err.Error())
-		w.WriteHeader(http.StatusInternalServerError)
-		return
+		panic(err.Error())
 	}
 
 	if userRequest.Email == "" || userRequest.Password == "" {
-		w.Header().Add("Content-Type", "application/json")
-		w.WriteHeader(http.StatusBadRequest)
-		json.NewEncoder(w).Encode(dto.ErrorResponse{Message: "You need to provide an email and a password !"})
-		return
+		c.AbortWithStatusJSON(http.StatusBadRequest, dto.ErrorResponse{Message: "You need to provide an email and a password !"})
 	}
 
 	id, err := h.svc.CreateUser(userRequest.Email, userRequest.Password)
 	if err != nil {
-		log.Println("Error while creating the user", err.Error())
-		return
+		panic(err.Error())
 	}
 
 	log.Println("Created user :", id)
-	w.Header().Add("Content-Type", "application/json")
-	w.WriteHeader(http.StatusOK)
-	json.NewEncoder(w).Encode(dto.CreateUserResponse{ID: id})
+	c.JSON(http.StatusOK, dto.CreateUserResponse{ID: id})
+}
+
+// GetAllUsers -
+func (h UserHandler) GetAllUsers(c *gin.Context) {
+
+	var response []dto.GetUserByIDResponse
+
+	userList, err := h.svc.FindAllUsers()
+	if err != nil {
+		panic(err.Error())
+	}
+
+	for _, email := range userList {
+		response = append(response, dto.GetUserByIDResponse{Email: email})
+	}
+
+	c.JSON(http.StatusOK, response)
 }

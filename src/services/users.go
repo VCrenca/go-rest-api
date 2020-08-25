@@ -1,7 +1,6 @@
 package services
 
 import (
-	"log"
 	"vcrenca/go-rest-api/src/dal"
 	"vcrenca/go-rest-api/src/model"
 
@@ -13,6 +12,7 @@ import (
 type IUserService interface {
 	FindByID(id string) (string, error)
 	CreateUser(email string, password string) (string, error)
+	FindAllUsers() ([]string, error)
 }
 
 type userService struct {
@@ -30,9 +30,9 @@ func NewUserService(repo dal.IUserRepository) IUserService {
 func (svc userService) FindByID(id string) (string, error) {
 	email, err := svc.repository.FindByID(id)
 	if err != nil {
-		log.Println("Failed getting the user by id !")
 		return "", err
 	}
+
 	return email, nil
 }
 
@@ -52,20 +52,27 @@ func (svc userService) CreateUser(email string, password string) (string, error)
 		Password: hash,
 	}
 
-	err = svc.repository.SaveUser(user)
-	if err != nil {
-		log.Println("Failed when creating a user !", err.Error())
+	if err = svc.repository.SaveUser(user); err != nil {
 		return "", err
 	}
 
 	return uuid, nil
 }
 
+func (svc userService) FindAllUsers() ([]string, error) {
+	userList, err := svc.repository.FindAllUsers()
+	if err != nil {
+		return nil, err
+	}
+
+	return userList, nil
+}
+
 func encodePassword(password string) (string, error) {
 	hash, err := bcrypt.GenerateFromPassword([]byte(password), 10)
 	if err != nil {
-		log.Println("Failed to encode the password")
-		return "", nil
+		return "", err
 	}
+
 	return string(hash), nil
 }

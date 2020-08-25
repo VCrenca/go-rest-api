@@ -3,15 +3,14 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"log"
 	"net/http"
-	"vcrenca/go-rest-api/src/dal"
 	"vcrenca/go-rest-api/src/handlers"
-	"vcrenca/go-rest-api/src/services"
+	"vcrenca/go-rest-api/src/model/dto"
 
+	"os"
+
+	"github.com/gin-gonic/gin"
 	_ "github.com/lib/pq"
-
-	"github.com/gorilla/mux"
 )
 
 const (
@@ -33,18 +32,19 @@ func main() {
 	}
 	defer db.Close()
 
-	r := mux.NewRouter()
+	// Initialize Gin router with default Logger and Recovery system
+	r := gin.New()
 
-	userRepository := dal.NewUserAccessObject(db)
-	userService := services.NewUserService(userRepository)
+	r.Use(gin.Logger())
 
-	handlers.ConfigureUserHandler(r, userService)
+	// Adding the basic recovery middleware with
+	r.Use(gin.CustomRecoveryWithWriter(os.Stderr, func(c *gin.Context, recovered interface{}) {
+		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: "An error occured"})
+		c.Next()
+	}))
 
-	server := http.Server{
-		Addr:    ":8080",
-		Handler: r,
-	}
+	// Configure routes
+	handlers.ConfigureUserHandler(r, db)
 
-	log.Println("Starting the server on port 8080...")
-	log.Fatal(server.ListenAndServe())
+	r.Run(":8080")
 }
