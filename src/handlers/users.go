@@ -5,7 +5,8 @@ import (
 	"log"
 	"net/http"
 	"vcrenca/go-rest-api/src/dal"
-	"vcrenca/go-rest-api/src/model/dto"
+	"vcrenca/go-rest-api/src/models/dto"
+	"vcrenca/go-rest-api/src/server"
 	"vcrenca/go-rest-api/src/services"
 
 	"github.com/gin-gonic/gin"
@@ -17,7 +18,7 @@ type UserHandler struct {
 }
 
 // ConfigureUserHandler -
-func ConfigureUserHandler(r *gin.Engine, db *sql.DB) {
+func ConfigureUserHandler(ginServer *server.GinServer, db *sql.DB) {
 
 	userRepository := dal.NewUserAccessObject(db)
 	userService := services.NewUserService(userRepository)
@@ -26,9 +27,12 @@ func ConfigureUserHandler(r *gin.Engine, db *sql.DB) {
 		svc: userService,
 	}
 
-	r.GET("/users", handler.GetAllUsers)
-	r.GET("/users/:id", handler.GetUserByID)
-	r.POST("/users", handler.PostUser)
+	// Private routes
+	ginServer.PrivateGroup().GET("/users", handler.GetAllUsers)
+	ginServer.PrivateGroup().GET("/users/:id", handler.GetUserByID)
+
+	// Public routes
+	ginServer.PublicGroup().POST("/users", handler.PostUser)
 }
 
 // GetUserByID -

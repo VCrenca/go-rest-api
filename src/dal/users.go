@@ -2,12 +2,12 @@ package dal
 
 import (
 	"database/sql"
-	"vcrenca/go-rest-api/src/model"
+	"vcrenca/go-rest-api/src/models"
 )
 
 // IUserRepository -
 type IUserRepository interface {
-	SaveUser(user model.User) error
+	SaveUser(user models.User) error
 	FindByID(id string) (string, error)
 	FindAllUsers() ([]string, error)
 }
@@ -25,7 +25,7 @@ func NewUserAccessObject(db *sql.DB) IUserRepository {
 }
 
 // SaveUser -
-func (dao userRepository) SaveUser(user model.User) error {
+func (dao userRepository) SaveUser(user models.User) error {
 	sql := "INSERT INTO users (id, email, password) VALUES ($1, $2, $3)"
 	_, err := dao.db.Exec(sql, user.ID, user.Email, user.Password)
 	if err != nil {

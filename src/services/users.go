@@ -2,7 +2,7 @@ package services
 
 import (
 	"vcrenca/go-rest-api/src/dal"
-	"vcrenca/go-rest-api/src/model"
+	"vcrenca/go-rest-api/src/models"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -46,7 +46,7 @@ func (svc userService) CreateUser(email string, password string) (string, error)
 
 	uuid := uuid.New().String()
 
-	user := model.User{
+	user := models.User{
 		ID:       uuid,
 		Email:    email,
 		Password: hash,
