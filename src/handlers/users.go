@@ -41,7 +41,13 @@ func (h UserHandler) GetUserByID(c *gin.Context) {
 
 	email, err := h.svc.FindByID(id)
 	if err != nil {
-		panic(err.Error())
+		switch err {
+		case sql.ErrNoRows:
+			c.JSON(http.StatusNotFound, dto.ErrorResponse{Message: "User not found"})
+			return
+		default:
+			panic(err.Error())
+		}
 	}
 
 	c.JSON(http.StatusOK, dto.GetUserByIDResponse{Email: email})
