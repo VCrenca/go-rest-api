@@ -4,7 +4,6 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"vcrenca/go-rest-api/src/dal"
 	"vcrenca/go-rest-api/src/models/dto"
 	"vcrenca/go-rest-api/src/server"
 	"vcrenca/go-rest-api/src/services"
@@ -18,13 +17,10 @@ type UserHandler struct {
 }
 
 // ConfigureUserHandler -
-func ConfigureUserHandler(ginServer *server.GinServer, db *sql.DB) {
-
-	userRepository := dal.NewUserAccessObject(db)
-	userService := services.NewUserService(userRepository)
+func ConfigureUserHandler(ginServer *server.GinServer, svc services.IUserService) {
 
 	handler := UserHandler{
-		svc: userService,
+		svc: svc,
 	}
 
 	// Private routes
@@ -50,7 +46,7 @@ func (h UserHandler) GetUserByID(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, dto.GetUserByIDResponse{Email: email})
+	c.JSON(http.StatusOK, dto.GetUserByIDResponse{ID: id, Email: email})
 }
 
 // PostUser -
@@ -77,16 +73,9 @@ func (h UserHandler) PostUser(c *gin.Context) {
 
 // GetAllUsers -
 func (h UserHandler) GetAllUsers(c *gin.Context) {
-
-	var response []dto.GetUserByIDResponse
-
-	userList, err := h.svc.FindAllUsers()
+	response, err := h.svc.FindAllUsers()
 	if err != nil {
 		panic(err.Error())
-	}
-
-	for _, email := range userList {
-		response = append(response, dto.GetUserByIDResponse{Email: email})
 	}
 
 	c.JSON(http.StatusOK, response)

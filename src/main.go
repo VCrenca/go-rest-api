@@ -4,9 +4,11 @@ import (
 	"database/sql"
 	"fmt"
 	"net/http"
+	"vcrenca/go-rest-api/src/dal"
 	"vcrenca/go-rest-api/src/handlers"
 	"vcrenca/go-rest-api/src/models/dto"
 	"vcrenca/go-rest-api/src/server"
+	"vcrenca/go-rest-api/src/services"
 
 	"os"
 
@@ -50,8 +52,15 @@ func main() {
 	ginServer.SetPublicGroup("/api")
 	ginServer.SetPrivateGroup("/api")
 
-	// Configure routes
-	handlers.ConfigureUserHandler(ginServer, db)
+	// Initiate Repositories
+	userRepository := dal.NewUserAccessObject(db)
 
+	// Initiate Services
+	userService := services.NewUserService(userRepository)
+
+	// Configure routes
+	handlers.ConfigureUserHandler(ginServer, userService)
+
+	// Launch Server
 	ginServer.Router().Run(":8080")
 }

@@ -3,13 +3,14 @@ package dal
 import (
 	"database/sql"
 	"vcrenca/go-rest-api/src/models"
+	"vcrenca/go-rest-api/src/models/dto"
 )
 
 // IUserRepository -
 type IUserRepository interface {
 	SaveUser(user models.User) error
 	FindByID(id string) (string, error)
-	FindAllUsers() ([]string, error)
+	FindAllUsers() ([]dto.GetUserByIDResponse, error)
 }
 
 // userRepository -
@@ -48,21 +49,22 @@ func (dao userRepository) FindByID(id string) (string, error) {
 	return email, nil
 }
 
-func (dao userRepository) FindAllUsers() ([]string, error) {
-	var userList []string
-	sql := "SELECT email FROM users"
+func (dao userRepository) FindAllUsers() ([]dto.GetUserByIDResponse, error) {
+	var userList []dto.GetUserByIDResponse
+	sql := "SELECT id, email FROM users"
 	rows, err := dao.db.Query(sql)
 	if err != nil {
 		return nil, err
 	}
 	defer rows.Close()
 
+	var id string
 	var email string
 	for rows.Next() {
-		if err := rows.Scan(&email); err != nil {
+		if err := rows.Scan(&id, &email); err != nil {
 			return nil, err
 		}
-		userList = append(userList, email)
+		userList = append(userList, dto.GetUserByIDResponse{ID: id, Email: email})
 	}
 
 	return userList, nil

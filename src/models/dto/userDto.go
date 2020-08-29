@@ -13,5 +13,6 @@ type CreateUserResponse struct {
 
 // GetUserByIDResponse -
 type GetUserByIDResponse struct {
-	Email string `json:"id"`
+	ID    string `json:"id"`
+	Email string `json:"email"`
 }

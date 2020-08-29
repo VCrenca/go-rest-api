@@ -3,6 +3,7 @@ package services
 import (
 	"vcrenca/go-rest-api/src/dal"
 	"vcrenca/go-rest-api/src/models"
+	"vcrenca/go-rest-api/src/models/dto"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
@@ -12,7 +13,7 @@ import (
 type IUserService interface {
 	FindByID(id string) (string, error)
 	CreateUser(email string, password string) (string, error)
-	FindAllUsers() ([]string, error)
+	FindAllUsers() ([]dto.GetUserByIDResponse, error)
 }
 
 type userService struct {
@@ -59,7 +60,7 @@ func (svc userService) CreateUser(email string, password string) (string, error)
 	return uuid, nil
 }
 
-func (svc userService) FindAllUsers() ([]string, error) {
+func (svc userService) FindAllUsers() ([]dto.GetUserByIDResponse, error) {
 	userList, err := svc.repository.FindAllUsers()
 	if err != nil {
 		return nil, err
