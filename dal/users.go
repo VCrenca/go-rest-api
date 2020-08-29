@@ -2,8 +2,10 @@ package dal
 
 import (
 	"database/sql"
-	"vcrenca/go-rest-api/src/models"
-	"vcrenca/go-rest-api/src/models/dto"
+
+	"github.com/vcrenca/go-rest-api/src/models/dto"
+
+	"github.com/vcrenca/go-rest-api/src/models"
 )
 
 // IUserRepository -

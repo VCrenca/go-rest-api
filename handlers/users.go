@@ -4,9 +4,10 @@ import (
 	"database/sql"
 	"log"
 	"net/http"
-	"vcrenca/go-rest-api/src/models/dto"
-	"vcrenca/go-rest-api/src/server"
-	"vcrenca/go-rest-api/src/services"
+
+	"github.com/vcrenca/go-rest-api/src/models/dto"
+	"github.com/vcrenca/go-rest-api/src/server"
+	"github.com/vcrenca/go-rest-api/src/services"
 
 	"github.com/gin-gonic/gin"
 )

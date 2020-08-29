@@ -3,12 +3,11 @@ package main
 import (
 	"database/sql"
 	"fmt"
-	"net/http"
-	"vcrenca/go-rest-api/src/dal"
-	"vcrenca/go-rest-api/src/handlers"
-	"vcrenca/go-rest-api/src/models/dto"
-	"vcrenca/go-rest-api/src/server"
-	"vcrenca/go-rest-api/src/services"
+
+	"github.com/vcrenca/go-rest-api/src/dal"
+	"github.com/vcrenca/go-rest-api/src/handlers"
+	"github.com/vcrenca/go-rest-api/src/server"
+	"github.com/vcrenca/go-rest-api/src/services"
 
 	"os"
 
@@ -44,10 +43,7 @@ func main() {
 	ginServer.Router().Use(gin.Logger())
 
 	// Adding the basic recovery middleware with
-	ginServer.Router().Use(gin.CustomRecoveryWithWriter(os.Stderr, func(c *gin.Context, recovered interface{}) {
-		c.JSON(http.StatusInternalServerError, dto.ErrorResponse{Message: "An error occured"})
-		c.Next()
-	}))
+	ginServer.Router().Use(gin.RecoveryWithWriter(os.Stderr))
 
 	ginServer.SetPublicGroup("/api")
 	ginServer.SetPrivateGroup("/api")

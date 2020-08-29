@@ -1,9 +1,9 @@
 package services
 
 import (
-	"vcrenca/go-rest-api/src/dal"
-	"vcrenca/go-rest-api/src/models"
-	"vcrenca/go-rest-api/src/models/dto"
+	"github.com/vcrenca/go-rest-api/src/dal"
+	"github.com/vcrenca/go-rest-api/src/models"
+	"github.com/vcrenca/go-rest-api/src/models/dto"
 
 	"github.com/google/uuid"
 	"golang.org/x/crypto/bcrypt"
