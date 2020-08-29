@@ -13,7 +13,7 @@ import (
 type IUserService interface {
 	FindByID(id string) (string, error)
 	CreateUser(email string, password string) (string, error)
-	FindAllUsers() ([]dto.UserResponse, error)
+	FindAllUsers() (*[]dto.UserResponse, error)
 }
 
 type userService struct {
@@ -60,7 +60,7 @@ func (svc userService) CreateUser(email string, password string) (string, error)
 	return uuid, nil
 }
 
-func (svc userService) FindAllUsers() ([]dto.UserResponse, error) {
+func (svc userService) FindAllUsers() (*[]dto.UserResponse, error) {
 	userList, err := svc.repository.FindAllUsers()
 	if err != nil {
 		return nil, err

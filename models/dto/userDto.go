@@ -1,5 +1,11 @@
 package dto
 
+// LoginRequest -
+type LoginRequest struct {
+	Email    string `json:"email"`
+	Password string `json:"password"`
+}
+
 // CreateUserRequest -
 type CreateUserRequest struct {
 	Email    string `json:"email"`

@@ -4,6 +4,7 @@ import (
 	"database/sql"
 	"fmt"
 
+	"github.com/vcrenca/go-rest-api/auth"
 	"github.com/vcrenca/go-rest-api/dal"
 	"github.com/vcrenca/go-rest-api/handlers"
 	"github.com/vcrenca/go-rest-api/server"
@@ -17,7 +18,7 @@ import (
 
 // DB Constants
 const (
-	hostname     = "localhost"
+	hostname     = "postgres-go"
 	port         = 5432
 	user         = "postgres"
 	password     = "postgres"
@@ -48,13 +49,18 @@ func main() {
 	ginServer.SetPublicGroup("/api")
 	ginServer.SetPrivateGroup("/api")
 
+	// Adding the authentication JWT middlware
+	ginServer.PrivateGroup().Use(auth.CheckTokenMiddleware)
+
 	// Initiate Repositories
 	userRepository := dal.NewUserAccessObject(db)
 
 	// Initiate Services
 	userService := services.NewUserService(userRepository)
+	authenticationService := auth.NewAuthenticationService(userRepository)
 
 	// Configure routes
+	handlers.ConfigureAuthenticationHandler(ginServer, authenticationService)
 	handlers.ConfigureUserHandler(ginServer, userService)
 
 	// Launch Server
