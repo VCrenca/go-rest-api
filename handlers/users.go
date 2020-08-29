@@ -47,7 +47,7 @@ func (h UserHandler) GetUserByID(c *gin.Context) {
 		}
 	}
 
-	c.JSON(http.StatusOK, dto.GetUserByIDResponse{ID: id, Email: email})
+	c.JSON(http.StatusOK, dto.UserResponse{ID: id, Email: email})
 }
 
 // PostUser -

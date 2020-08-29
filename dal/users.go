@@ -12,7 +12,7 @@ import (
 type IUserRepository interface {
 	SaveUser(user models.User) error
 	FindByID(id string) (string, error)
-	FindAllUsers() ([]dto.GetUserByIDResponse, error)
+	FindAllUsers() ([]dto.UserResponse, error)
 }
 
 // userRepository -
@@ -51,8 +51,8 @@ func (dao userRepository) FindByID(id string) (string, error) {
 	return email, nil
 }
 
-func (dao userRepository) FindAllUsers() ([]dto.GetUserByIDResponse, error) {
-	var userList []dto.GetUserByIDResponse
+func (dao userRepository) FindAllUsers() ([]dto.UserResponse, error) {
+	var userList []dto.UserResponse
 	sql := "SELECT id, email FROM users"
 	rows, err := dao.db.Query(sql)
 	if err != nil {
@@ -66,7 +66,7 @@ func (dao userRepository) FindAllUsers() ([]dto.GetUserByIDResponse, error) {
 		if err := rows.Scan(&id, &email); err != nil {
 			return nil, err
 		}
-		userList = append(userList, dto.GetUserByIDResponse{ID: id, Email: email})
+		userList = append(userList, dto.UserResponse{ID: id, Email: email})
 	}
 
 	return userList, nil
