@@ -4,10 +4,10 @@ import (
 	"database/sql"
 	"fmt"
 
-	"github.com/vcrenca/go-rest-api/src/dal"
-	"github.com/vcrenca/go-rest-api/src/handlers"
-	"github.com/vcrenca/go-rest-api/src/server"
-	"github.com/vcrenca/go-rest-api/src/services"
+	"github.com/vcrenca/go-rest-api/dal"
+	"github.com/vcrenca/go-rest-api/handlers"
+	"github.com/vcrenca/go-rest-api/server"
+	"github.com/vcrenca/go-rest-api/services"
 
 	"os"
 

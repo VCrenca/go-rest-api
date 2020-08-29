@@ -5,9 +5,9 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/vcrenca/go-rest-api/src/models/dto"
-	"github.com/vcrenca/go-rest-api/src/server"
-	"github.com/vcrenca/go-rest-api/src/services"
+	"github.com/vcrenca/go-rest-api/models/dto"
+	"github.com/vcrenca/go-rest-api/server"
+	"github.com/vcrenca/go-rest-api/services"
 
 	"github.com/gin-gonic/gin"
 )

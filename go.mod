@@ -1,4 +1,4 @@
-module github.com/vcrenca
+module github.com/vcrenca/go-rest-api
 
 go 1.14
 
