@@ -9,6 +9,7 @@ import (
 	"github.com/vcrenca/go-rest-api/handlers"
 	"github.com/vcrenca/go-rest-api/server"
 	"github.com/vcrenca/go-rest-api/services"
+	"github.com/vcrenca/go-rest-api/websocket"
 
 	"os"
 
@@ -62,6 +63,12 @@ func main() {
 	// Configure routes
 	handlers.ConfigureAuthenticationHandler(ginServer, authenticationService)
 	handlers.ConfigureUserHandler(ginServer, userService)
+
+	// Websocket
+	hub := websocket.NewHub()
+	go hub.Run()
+
+	ginServer.Router().GET("/ws", hub.Handler)
 
 	// Launch Server
 	ginServer.Router().Run(":8080")
